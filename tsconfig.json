@@ -1,0 +1,15 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "sourceMap": true,
+    "lib": ["es6"]
+  },
+  "include": [
+    "src/"
+  ]
+}

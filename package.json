@@ -1,0 +1,22 @@
+{
+  "name": "alexa-skill-dekitayo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "lint": "tslint -t verbose -p ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^12.6.2",
+    "ask-sdk-core": "^2.6.0",
+    "ask-sdk-model": "^1.18.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.5.3",
+    "tslint": "^5.18.0"
+  }
+}
