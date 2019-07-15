@@ -1,4 +1,4 @@
-import * as Alexa from "ask-sdk-core";
+import * as Alexa from "ask-sdk";
 import { RequestEnvelope } from "ask-sdk-model";
 
 import { DekitayoIntentHandler } from "./dekitayoHandler";
@@ -7,7 +7,7 @@ let skill: Alexa.Skill;
 
 export const handler = async (event: RequestEnvelope, context: any) => {
 	if (!skill) {
-		skill = Alexa.SkillBuilders.custom()
+		skill = Alexa.SkillBuilders.standard()
 			.addRequestHandlers(
 				LaunchRequestHandler,
 				DekitayoIntentHandler,
@@ -17,6 +17,8 @@ export const handler = async (event: RequestEnvelope, context: any) => {
 				IntentReflectorHandler) // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers      .addErrorHandlers(ErrorHandler)
 			.addErrorHandlers(
 				ErrorHandler)
+			.withTableName("Dekitayo")
+			.withAutoCreateTable(true)
 			.create();
 	}
 	return skill.invoke(event, context);

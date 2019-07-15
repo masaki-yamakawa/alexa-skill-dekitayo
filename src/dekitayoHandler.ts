@@ -1,14 +1,13 @@
-import * as Alexa from "ask-sdk-core";
+import * as Alexa from "ask-sdk";
 import { IntentRequest } from "ask-sdk-model";
-
-const soundMax: number = 4;
+import * as util from "util";
 
 export const DekitayoIntentHandler = {
 	canHandle(handlerInput: Alexa.HandlerInput) {
 		return handlerInput.requestEnvelope.request.type === "IntentRequest"
 			&& handlerInput.requestEnvelope.request.intent.name === "DekitayoIntent";
 	},
-	handle(handlerInput: Alexa.HandlerInput) {
+	async handle(handlerInput: Alexa.HandlerInput) {
 		const request: IntentRequest = handlerInput.requestEnvelope.request as IntentRequest;
 		const task = request.intent.slots.task.value;
 		const day = request.intent.slots.day.value;
@@ -39,9 +38,24 @@ export const DekitayoIntentHandler = {
 		} else if (newAttributes.task == null) {
 			speechText = "何をやったのか教えてよ";
 		} else {
+			// TODO デバッグ用
+			const beforeData = await handlerInput.attributesManager.getPersistentAttributes();
+			console.log(`[BeforeDynamoData] ${util.inspect(beforeData)}`);
+
 			const sound = getRandomSound();
-			speechText = `${newAttributes.day}は ${newAttributes.task}を ${newAttributes.amount} ${newAttributes.unit}やったんだね。<audio src='${sound}'/>`;
+			speechText = `${newAttributes.day}は${newAttributes.task}を${newAttributes.amount}${newAttributes.unit}やったんだね。<audio src='${sound}'/>`;
+			handlerInput.attributesManager.setPersistentAttributes({
+				day: newAttributes.day,	// TODO yyyy-mm-ddに変換する
+				task: newAttributes.task,
+				amount: newAttributes.amount,
+				unit: newAttributes.unit,
+			});
+			await handlerInput.attributesManager.savePersistentAttributes();
 			shouldEndSession = true;
+
+			// TODO デバッグ用
+			const afterData = await handlerInput.attributesManager.getPersistentAttributes();
+			console.log(`[AfterDynamoData] ${util.inspect(afterData)}`);
 		}
 
 		return handlerInput.responseBuilder
@@ -61,7 +75,7 @@ const getRandomSound = () => {
 			"soundbank://soundlibrary/cartoon/amzn_sfx_boing_short_1x_01",
 			"soundbank://soundlibrary/musical/amzn_sfx_bell_timer_01",
 		];
-	return sounds[getRandomInt(soundMax)];
+	return sounds[getRandomInt(sounds.length)];
 };
 
 const getRandomInt = (max) => {
